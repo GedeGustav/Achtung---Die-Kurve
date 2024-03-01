@@ -1,4 +1,6 @@
 import pygame
+import random
+import time
 
 
 pygame.init()
@@ -9,22 +11,8 @@ size = WIDTH, HEIGHT = 800, 600
 screen = pygame.display.set_mode((800, 600))
 screen.fill((255, 0, 255))
 
-rot = 1  
-rot_speed = 1
 
-# define a surface (RECTANGLE)  
-image = pygame.Surface((100 , 100))  
-# for making transparent background while rotating an image  
-image.set_colorkey((0,0,0))  
-# fill the rectangle / surface with green color  
-image.fill((0,255,0))   
-# define rect for placing the rectangle at the desired position  
-rect = image.get_rect()  
-rect.center = (WIDTH // 2 , HEIGHT // 2)  
-
-
-
-
+power_modes = ["normal", "speed", "slow", "big", "90_turn"]
 
 
 class Player:
@@ -33,26 +21,59 @@ class Player:
         self.x = WIDTH / 2
         self.y = HEIGHT / 2
         self.speed = 2
+        self.rotation = 90
+        self.direction = pygame.Vector2(0, 1)
+        self.rect = pygame.Rect(self.x, self.y, 1, 1)
+        self.rects = []
+        self.invisible_time = 15
+        self.mode = power_modes[0]
+
 
     def update(self):
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_w]:
-            self.y -= self.speed
-        if keys[pygame.K_s]:
-            self.y += self.speed
+        """keys = pygame.key.get_pressed()
         if keys[pygame.K_a]:
-            self.x -= self.speed
+            self.direction.rotate_ip(-self.rotation)
         if keys[pygame.K_d]:
-            self.x += self.speed
+            self.direction.rotate_ip(self.rotation)"""
 
-        self.draw()
+        """for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_a:
+                    self.direction.rotate_ip(-self.rotation)
+                if event.key == pygame.K_d:
+                    self.direction.rotate_ip(self.rotation)"""
+
+
+        self.movement()
+        self.rect = pygame.Rect(self.x, self.y, 5, 5)
+
+        if self.invisible_time <= 0:
+            self.draw()
+            self.rects.append(self.rect)
+        self.invisible_time -= 1
+
+        if self.invisible_time <= -200:
+            self.invisible_time = 15
+
+        if len(self.rects) > 10:
+            self.collision()
+
+    def movement(self):
+        self.x += self.direction.x * self.speed
+        self.y += self.direction.y * self.speed
 
     def draw(self):
-        pygame.draw.circle(screen, self.color, (self.x, self.y), 10)
+        #pygame.draw.circle(screen, self.color, (self.x, self.y), 10)
+        pygame.draw.rect(screen, self.color, self.rect)
 
+    def collision(self):
+        for rect in self.rects[0: len(self.rects) - 10]:
+            if self.rect.colliderect(rect):
+                print("Game Over")
+                pygame.quit()
+                exit()
 
 player1 = Player((255, 255, 255)) 
-
 
 while True:
     clock = pygame.time.Clock()
@@ -61,31 +82,16 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_a:
+                player1.direction.rotate_ip(-player1.rotation)
+            if event.key == pygame.K_a:
+                player1.direction.rotate_ip(-player1.rotation)
 
+    player1.update()
+    print(player1.direction)
 
-    #player1.update()
-
-
-    # making a copy of the old center of the rectangle  
-    old_center = rect.center 
-    # defining angle of the rotation  
-    rot = (rot + rot_speed) % 360
-    # rotating the orignal image  
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_a]:
-        new_image = pygame.transform.rotate(image , rot)
-    elif keys[pygame.K_d]:
-        new_image = pygame.transform.rotate(image , -rot)
-    else:
-        new_image = image
-    
-    rect = new_image.get_rect()  
-    # set the rotated rectangle to the old center  
-    rect.center = old_center  
-    # drawing the rotated rectangle to the screen  
-    screen.blit(new_image , rect)
-
-    pygame.display.update()
+    pygame.display.flip()
     pygame.time.Clock().tick(60)
 
 
