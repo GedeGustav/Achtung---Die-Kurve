@@ -4,6 +4,10 @@ from point import Point
 from menuButton import MenuButton
 import constants
 
+
+
+clock = pygame.time.Clock()
+
 class Game():
     def __init__(self):
 
@@ -31,6 +35,8 @@ class Game():
         self.create_menu()
         self.create_settings()
         pygame.display.set_caption("Snake")
+
+    
 
     def create_menu(self):
         offset = 30
@@ -93,12 +99,15 @@ class Game():
                         if setting_item.check_click(event.pos)[1] == "Back":
                             self.state = "menu"
                         if setting_item.check_click(event.pos)[1] == "Easy":
-                            self.fps
+                            self.mode = "Easy"
+                        if setting_item.check_click(event.pos)[1] == "Medium":
+                            self.mode = "Medium"
+                        if setting_item.check_click(event.pos)[1] == "Hard":
+                            self.mode = "Hard"
        
-    def start_game(self, isSingleplayer = True, mode = "Easy"):
+    def start_game(self, isSingleplayer = True):
         self.isSingleplayer = isSingleplayer
-        self.mode = mode
-        snake = Snake(self.screen, constants.WHITE, mode)
+        snake = Snake(self.screen, constants.WHITE, self.mode)
         
         self.players.append(snake)
         self.point = Point(self.screen, constants.RED)
@@ -161,6 +170,10 @@ class Game():
         pygame.display.flip()
 
     def run(self):
+
+        clock.tick(constants.FPS)
+
+
         if self.state == "game":
             self.update()
             self.control_game()

@@ -5,13 +5,11 @@ import constants
 
 pygame.init()
 
-clock = pygame.time.Clock()
 game = Game()
 
 while game.running:
 
     game.run()
     
-    clock.tick(constants.FPS)
 
 pygame.quit()

@@ -42,6 +42,16 @@ class Snake(pygame.sprite.Sprite):
 
     def update(self):
     
+        if self.mode == "Easy":
+            self.speed = 0.166
+        if self.mode == "Medium":
+            self.speed = 0.33
+        if self.mode == "Hard":
+            self.speed = 1
+
+
+
+
         self.snake_body.insert(0, self.snake_head)
         self.snake_body.pop()
 
