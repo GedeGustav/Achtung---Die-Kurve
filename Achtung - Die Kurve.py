@@ -21,7 +21,7 @@ class Player:
         self.x = WIDTH / 2
         self.y = HEIGHT / 2
         self.speed = 2
-        self.rotation = 90
+        self.rotation = 3
         self.direction = pygame.Vector2(0, 1)
         self.rect = pygame.Rect(self.x, self.y, 1, 1)
         self.rects = []
@@ -30,18 +30,13 @@ class Player:
 
 
     def update(self):
-        """keys = pygame.key.get_pressed()
-        if keys[pygame.K_a]:
-            self.direction.rotate_ip(-self.rotation)
-        if keys[pygame.K_d]:
-            self.direction.rotate_ip(self.rotation)"""
-
-        """for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_a:
-                    self.direction.rotate_ip(-self.rotation)
-                if event.key == pygame.K_d:
-                    self.direction.rotate_ip(self.rotation)"""
+        if self.mode == power_modes[0]:
+            self.rotation = 3
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_a]:
+                self.direction.rotate_ip(-self.rotation)
+            if keys[pygame.K_d]:
+                self.direction.rotate_ip(self.rotation)
 
 
         self.movement()
@@ -83,10 +78,12 @@ while True:
             pygame.quit()
             exit()
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_a:
-                player1.direction.rotate_ip(-player1.rotation)
-            if event.key == pygame.K_a:
-                player1.direction.rotate_ip(-player1.rotation)
+            if player1.mode == power_modes[4]:
+                player1.rotation = 90
+                if event.key == pygame.K_a:
+                    player1.direction.rotate_ip(-player1.rotation)
+                if event.key == pygame.K_d:
+                    player1.direction.rotate_ip(player1.rotation)
 
     player1.update()
     print(player1.direction)
