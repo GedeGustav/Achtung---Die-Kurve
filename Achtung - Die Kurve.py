@@ -7,16 +7,14 @@ pygame.init()
 
 size = WIDTH, HEIGHT = 800, 600
 
-
 screen = pygame.display.set_mode((800, 600))
-screen.fill((255, 0, 255))
-
+screen.fill((255, 255, 255))
 
 power_modes = ["normal", "speed", "slow", "big", "90_turn"]
 
 
 class Player:
-    def __init__(self, color):
+    def __init__(self, color, left, right):
         self.color = color
         self.x = WIDTH / 2
         self.y = HEIGHT / 2
@@ -27,15 +25,17 @@ class Player:
         self.rects = []
         self.invisible_time = 15
         self.mode = power_modes[0]
+        self.left = left
+        self.right = right
 
 
     def update(self):
         if self.mode == power_modes[0]:
             self.rotation = 3
             keys = pygame.key.get_pressed()
-            if keys[pygame.K_a]:
+            if keys[self.left]:
                 self.direction.rotate_ip(-self.rotation)
-            if keys[pygame.K_d]:
+            if keys[self.right]:
                 self.direction.rotate_ip(self.rotation)
 
 
@@ -64,11 +64,14 @@ class Player:
     def collision(self):
         for rect in self.rects[0: len(self.rects) - 10]:
             if self.rect.colliderect(rect):
-                print("Game Over")
                 pygame.quit()
                 exit()
 
-player1 = Player((255, 255, 255)) 
+players = [
+            Player((255, 0, 0), pygame.K_a, pygame.K_d),
+            Player((0, 255, 0), pygame.K_LEFT, pygame.K_RIGHT),
+            Player((0, 0, 255), pygame.K_o, pygame.K_p)
+          ]
 
 while True:
     clock = pygame.time.Clock()
@@ -78,16 +81,16 @@ while True:
             pygame.quit()
             exit()
         if event.type == pygame.KEYDOWN:
-            if player1.mode == power_modes[4]:
-                player1.rotation = 90
-                if event.key == pygame.K_a:
-                    player1.direction.rotate_ip(-player1.rotation)
-                if event.key == pygame.K_d:
-                    player1.direction.rotate_ip(player1.rotation)
-
-    player1.update()
-    print(player1.direction)
-
+            for player in players:
+                """if player.mode == power_modes[4]:
+                    player.rotation = 90
+                    if event.key == pygame.K_a:
+                        player.direction.rotate_ip(-player.rotation)
+                    if event.key == pygame.K_d:
+                        player.direction.rotate_ip(player.rotation)"""
+    for player in players:       
+        player.update()
+   
     pygame.display.flip()
     pygame.time.Clock().tick(60)
 
