@@ -20,23 +20,36 @@ class Powerup:
         self.y = y
         self.mode = power_modes[random.randint(1, 4)]
         self.image = powerup_images[power_modes.index(self.mode) - 1]
+        self.image = pygame.transform.scale(self.image, (25, 25))
         self.rect = self.image.get_rect()
+        self.rect.center = (self.x, self.y)
         self.color = (0, 0, 0)
 
     def draw(self):
-        self.rect.center = (self.x, self.y)
-        self.image = pygame.transform.scale(self.image, (50, 50))
-        self.rect.width = self.image.get_width()
-        self.rect.height = self.image.get_height()
         screen.blit(self.image, self.rect)
 
     def update(self):
         self.draw()
+        self.collision()
 
-
+    def collision(self):
+        for player in players:
+            for rect in player.rects:
+                if self.rect.colliderect(rect):
+                    pygame.draw.rect(screen, (200, 200, 200), 
+                                    (self.x - self.image.get_width()/2, 
+                                     self.y- self.image.get_height()/2, 
+                                     self.image.get_width() + 1, self.image.get_height() + 1))
+                    
+                    pygame.draw.rect(screen, (player.color), rect)
+                    pygame.display.flip()
+                    powerups.remove(self)
+                    
+player_number = 0
 
 class Player:
     def __init__(self, color, left, right):
+        self.number = player_number
         self.color = color
         self.x = WIDTH / 2
         self.y = HEIGHT / 2
@@ -49,7 +62,6 @@ class Player:
         self.mode = power_modes[0]
         self.left = left
         self.right = right
-
 
     def update(self):
         if self.mode == power_modes[0]:
@@ -141,7 +153,6 @@ class Player:
         for powerup in powerups:
             if self.rect.colliderect(powerup.rect):
                 self.mode = powerup.mode
-                powerups.remove(powerup)
 
 players = [
             Player((255, 0, 0), pygame.K_a, pygame.K_d),
