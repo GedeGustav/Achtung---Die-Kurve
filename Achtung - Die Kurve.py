@@ -41,9 +41,9 @@ class Powerup:
                                      self.y- self.image.get_height()/2, 
                                      self.image.get_width() + 1, self.image.get_height() + 1))
                     
+                    powerups.remove(self)
                     pygame.draw.rect(screen, (player.color), rect)
                     pygame.display.flip()
-                    powerups.remove(self)
                     
 
 class Player:
@@ -62,7 +62,6 @@ class Player:
         self.right = right
 
     def update(self):
-        print(self.direction)
         if self.mode == power_modes[0]:
             self.power_0()
 
@@ -182,11 +181,13 @@ class Player:
 players = [
             Player((255, 0, 0), pygame.K_a, pygame.K_d, WIDTH/10, HEIGHT/10),
             Player((0, 255, 0), pygame.K_LEFT, pygame.K_RIGHT, WIDTH - WIDTH/10, HEIGHT/10),
-            Player((0, 0, 255), pygame.K_o, pygame.K_p, WIDTH/10, HEIGHT - HEIGHT/10),
-            Player((255, 255, 0), pygame.K_v, pygame.K_b, WIDTH - WIDTH/10, HEIGHT - HEIGHT/10)
+            #Player((0, 0, 255), pygame.K_o, pygame.K_p, WIDTH/10, HEIGHT - HEIGHT/10),
+            #Player((255, 255, 0), pygame.K_v, pygame.K_b, WIDTH - WIDTH/10, HEIGHT - HEIGHT/10)
           ]
 
-powerups = [Powerup(random.randint(100, WIDTH - 100), random.randint(100, HEIGHT - 100)) for i in range(10)]
+powerups = [Powerup(500, 500)]
+
+power_up_spawn_time = 600
 
 while True:
     clock = pygame.time.Clock()
@@ -204,12 +205,13 @@ while True:
                     if event.key == player.right:
                         player.direction.rotate_ip(player.rotation)
     
-    
-    
+    power_up_spawn_time -= 1
+    if power_up_spawn_time <= 0:
+        powerups.append(Powerup(random.randint(25, WIDTH - 25), random.randint(25, HEIGHT - 25)))
+        power_up_spawn_time = 600
     
     for player in players:       
         player.update()
-        print(player.mode)
 
     for powerup in powerups:
         powerup.update()
