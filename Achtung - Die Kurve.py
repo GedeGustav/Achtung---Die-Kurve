@@ -92,6 +92,7 @@ class Player:
             self.collision()
 
         self.powerup_collision()
+        self.outOfBounds()
 
     def power_0(self):
         self.power_time = 300
@@ -161,6 +162,11 @@ class Player:
     def draw(self):
         pygame.draw.rect(screen, self.color, self.rect)
 
+    def outOfBounds(self):
+        if self.x < 0 or self.x > WIDTH or self.y < 0 or self.y > HEIGHT:
+            pygame.quit()
+            exit()
+
     def collision(self):
         for rect in self.rects[0: len(self.rects) - 10]:
             if self.rect.colliderect(rect):
@@ -180,7 +186,7 @@ class Player:
 
 players = [
             Player((255, 0, 0), pygame.K_a, pygame.K_d, WIDTH/10, HEIGHT/10),
-            Player((0, 255, 0), pygame.K_LEFT, pygame.K_RIGHT, WIDTH - WIDTH/10, HEIGHT/10),
+            #Player((0, 255, 0), pygame.K_LEFT, pygame.K_RIGHT, WIDTH - WIDTH/10, HEIGHT/10),
             #Player((0, 0, 255), pygame.K_o, pygame.K_p, WIDTH/10, HEIGHT - HEIGHT/10),
             #Player((255, 255, 0), pygame.K_v, pygame.K_b, WIDTH - WIDTH/10, HEIGHT - HEIGHT/10)
           ]
@@ -188,6 +194,45 @@ players = [
 powerups = [Powerup(500, 500)]
 
 power_up_spawn_time = 600
+
+
+class button:
+    def __init__(self, x, y, width, height) -> None:
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+
+    def update(self):  
+        self.draw()
+        self.collision()
+
+    def draw(self):
+        pygame.draw.rect(screen, (0, 0, 0), (self.x, self.y, self.width, self.height))
+
+    def collision(self):
+        if pygame.mouse.get_pos()[0] > self.x and pygame.mouse.get_pos()[0] < self.x + self.width and pygame.mouse.get_pos()[1] > self.y and pygame.mouse.get_pos()[1] < self.y + self.height:
+            if pygame.mouse.get_pressed()[0]:
+                print("bing")
+ 
+
+def game(timer):
+    button1 = button(100, 100, 100, 100)
+    button1.update()
+    timer -= 1
+    if timer <= 0:
+        powerups.append(Powerup(random.randint(25, WIDTH - 25), random.randint(25, HEIGHT - 25)))
+        timer = 600
+    
+    for player in players:       
+        player.update()
+
+    for powerup in powerups:
+        powerup.update()
+
+
+    pygame.display.flip()
+
 
 while True:
     clock = pygame.time.Clock()
@@ -205,20 +250,8 @@ while True:
                     if event.key == player.right:
                         player.direction.rotate_ip(player.rotation)
     
-    power_up_spawn_time -= 1
-    if power_up_spawn_time <= 0:
-        powerups.append(Powerup(random.randint(25, WIDTH - 25), random.randint(25, HEIGHT - 25)))
-        power_up_spawn_time = 600
-    
-    for player in players:       
-        player.update()
-
-    for powerup in powerups:
-        powerup.update()
-   
-
-
-    pygame.display.flip()
+  
     pygame.time.Clock().tick(60)
+    game(power_up_spawn_time)
 
 
