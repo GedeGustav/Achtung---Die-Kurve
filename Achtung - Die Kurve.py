@@ -44,7 +44,7 @@ class Powerup:
                     powerups.remove(self)
                     pygame.draw.rect(screen, (player.color), rect)
                     pygame.display.flip()
-                    
+
 
 class Player:
     def __init__(self, color, left, right, x, y):
@@ -195,63 +195,83 @@ powerups = [Powerup(500, 500)]
 
 power_up_spawn_time = 600
 
-
-class button:
-    def __init__(self, x, y, width, height) -> None:
+class Button:
+    def __init__(self, x, y, width, height, text) -> None:
         self.x = x
         self.y = y
         self.width = width
         self.height = height
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        self.rect.center = (self.x, self.y)
+        self.text = text
 
     def update(self):  
         self.draw()
         self.collision()
 
     def draw(self):
-        pygame.draw.rect(screen, (0, 0, 0), (self.x, self.y, self.width, self.height))
-
+        pygame.draw.rect(screen, (0, 0, 0), (self.rect.x, self.rect.y, self.rect.width, self.rect.height))
+        font = pygame.font.Font('freesansbold.ttf', 32)
+        text = font.render(self.text, True, (255, 255, 255))
+        textRect = text.get_rect()
+        #screen.blit(text, (self.x + self.width/2 - textRect.width/2, self.y + self.height/2 - textRect.height/2))
+        screen.blit(text, (self.x - textRect.width/2, self.y - textRect.height/2))
+        
     def collision(self):
         if pygame.mouse.get_pos()[0] > self.x and pygame.mouse.get_pos()[0] < self.x + self.width and pygame.mouse.get_pos()[1] > self.y and pygame.mouse.get_pos()[1] < self.y + self.height:
             if pygame.mouse.get_pressed()[0]:
-                print("bing")
- 
+                print(self.text)
+                game(power_up_spawn_time)
 
 def game(timer):
-    button1 = button(100, 100, 100, 100)
-    button1.update()
-    timer -= 1
-    if timer <= 0:
-        powerups.append(Powerup(random.randint(25, WIDTH - 25), random.randint(25, HEIGHT - 25)))
-        timer = 600
+    screen.fill((200, 200, 200))
+    while True:
+        clock = pygame.time.Clock()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+            if event.type == pygame.KEYDOWN:
+                for player in players:
+                    if player.mode == power_modes[4]:
+                        player.rotation = 90
+                        if event.key == player.left:
+                            player.direction.rotate_ip(-player.rotation)
+                        if event.key == player.right:
+                            player.direction.rotate_ip(player.rotation)
     
-    for player in players:       
-        player.update()
+        clock.tick(60)
 
-    for powerup in powerups:
-        powerup.update()
+        timer -= 1
+        if timer <= 0:
+            powerups.append(Powerup(random.randint(25, WIDTH - 25), random.randint(25, HEIGHT - 25)))
+            timer = 600
+        
+        for player in players:       
+            player.update()
 
+        for powerup in powerups:
+            powerup.update()
 
-    pygame.display.flip()
+        pygame.display.flip()
 
-
-while True:
-    clock = pygame.time.Clock()
-
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            exit()
-        if event.type == pygame.KEYDOWN:
-            for player in players:
-                if player.mode == power_modes[4]:
-                    player.rotation = 90
-                    if event.key == player.left:
-                        player.direction.rotate_ip(-player.rotation)
-                    if event.key == player.right:
-                        player.direction.rotate_ip(player.rotation)
+def menu():
+    buttons = [Button(WIDTH/2, 200, 500, 300, "bing"), Button(WIDTH/2, 800, 500, 300, "bong")]
     
-  
-    pygame.time.Clock().tick(60)
-    game(power_up_spawn_time)
+    while True:
+        screen.fill((20, 200, 20))
+        for button in buttons:
+            button.update()
+        
+        pygame.display.flip()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+
+menu()
+    #game(power_up_spawn_time)
 
 
