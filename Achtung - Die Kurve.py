@@ -20,7 +20,7 @@ class Powerup:
         self.y = y
         self.mode = power_modes[random.randint(1, 4)]
         self.image = powerup_images[power_modes.index(self.mode) - 1]
-        self.image = pygame.transform.scale(self.image, (25, 25))
+        self.image = pygame.transform.scale(self.image, powerup_size)
         self.rect = self.image.get_rect()
         self.rect.center = (self.x, self.y)
         self.color = (0, 0, 0)
@@ -201,6 +201,7 @@ class Player:
             if self.rect.colliderect(powerup.rect):
                 self.mode = powerup.mode
 
+
 players = [
             Player((255, 0, 0), pygame.K_a, pygame.K_d, WIDTH/10, HEIGHT/10),
             #Player((0, 255, 0), pygame.K_LEFT, pygame.K_RIGHT, WIDTH - WIDTH/10, HEIGHT/10),
@@ -212,8 +213,9 @@ powerups = [Powerup(500, 500)]
 
 power_up_spawn_time = powerup_spawn_rate
 
+
 class Button:
-    def __init__(self, x, y, width, height, text) -> None:
+    def __init__(self, x, y, width, height, text, text_size) -> None:
         self.x = x
         self.y = y
         self.width = width
@@ -221,6 +223,7 @@ class Button:
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
         self.rect.center = (self.x, self.y)
         self.text = text
+        self.text_size = text_size
 
     def update(self):  
         self.draw()
@@ -228,17 +231,29 @@ class Button:
 
     def draw(self):
         pygame.draw.rect(screen, (0, 0, 0), (self.rect.x, self.rect.y, self.rect.width, self.rect.height))
-        font = pygame.font.Font('freesansbold.ttf', 32)
+        font = pygame.font.Font('freesansbold.ttf', self.text_size)
         text = font.render(self.text, True, (255, 255, 255))
         textRect = text.get_rect()
         #screen.blit(text, (self.x + self.width/2 - textRect.width/2, self.y + self.height/2 - textRect.height/2))
         screen.blit(text, (self.x - textRect.width/2, self.y - textRect.height/2))
         
-    def collision(self):
+    def collision(self, playerCount = Player_default_count):
         if pygame.mouse.get_pos()[0] > self.x - self.width/2 and pygame.mouse.get_pos()[0] < self.x + self.width and pygame.mouse.get_pos()[1] > self.y - self.height/2 and pygame.mouse.get_pos()[1] < self.y + self.height:
             if pygame.mouse.get_pressed()[0]:
                 print(self.text)
-                game(power_up_spawn_time)
+                if self.text == "START":
+                    game(power_up_spawn_time)
+                if self.text == "+":
+                    playerCount += 1
+                    if playerCount > 4:
+                        playerCount = 4
+                    print(playerCount)
+                if self.text == "-":
+                    playerCount -= 1
+                    if playerCount < 2:
+                        playerCount = 2
+                    print(playerCount)
+
 
 def game(timer):
     screen.fill((200, 200, 200))
@@ -274,7 +289,12 @@ def game(timer):
         pygame.display.flip()
 
 def menu():
-    buttons = [Button(WIDTH/2, 200, 500, 300, "start"), Button(WIDTH/2, 800, 50, 50, "+")]
+    buttons = [
+                Button(WIDTH/2, 200, 500, 200, "START", 100), 
+                Button(WIDTH/2, 500, 240, 50, "Player count", 32),
+                Button(WIDTH/2 - 150, 500, 50, 50, "-", 32),
+                Button(WIDTH/2 + 150, 500, 50, 50, "+", 32)
+              ]
     
     while True:
         screen.fill((20, 200, 20))
