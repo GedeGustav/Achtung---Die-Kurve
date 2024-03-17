@@ -240,7 +240,6 @@ class Button:
     def collision(self, playerCount = Player_default_count):
         if pygame.mouse.get_pos()[0] > self.x - self.width/2 and pygame.mouse.get_pos()[0] < self.x + self.width and pygame.mouse.get_pos()[1] > self.y - self.height/2 and pygame.mouse.get_pos()[1] < self.y + self.height:
             if pygame.mouse.get_pressed()[0]:
-                print(self.text)
                 if self.text == "START":
                     game(power_up_spawn_time)
                 if self.text == "+":
@@ -297,7 +296,7 @@ def menu():
               ]
     
     while True:
-        screen.fill((20, 200, 20))
+        screen.fill((220, 220, 220))
         for button in buttons:
             button.update()
         
