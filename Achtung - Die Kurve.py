@@ -1,6 +1,6 @@
 import pygame
 import random
-import time
+from Variables import *
 
 
 pygame.init()
@@ -24,6 +24,13 @@ class Powerup:
         self.rect = self.image.get_rect()
         self.rect.center = (self.x, self.y)
         self.color = (0, 0, 0)
+        for player in players:
+            for rect in player.rects:
+                if self.rect.colliderect(rect):
+                    print("collided")
+                    self.x = random.randint(25, WIDTH - 25)
+                    self.y = random.randint(25, HEIGHT - 25)
+                    self.rect.center = (self.x, self.y)
 
     def draw(self):
         screen.blit(self.image, self.rect)
@@ -51,13 +58,15 @@ class Player:
         self.color = color
         self.x = x
         self.y = y
+        self.width = player_size[0]
+        self.height = player_size[1]
         self.direction = (pygame.Vector2(WIDTH/2, HEIGHT/2) - pygame.Vector2(x, y)).normalize()
-        self.rect = pygame.Rect(self.x, self.y, 1, 1)
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
         self.rect.center = (self.x, self.y)
         self.rects = []
         self.invisible_time = 15
         self.mode = power_modes[0]
-        self.power_time = 300
+        self.power_time = powerup_duration
         self.left = left
         self.right = right
 
@@ -78,48 +87,39 @@ class Player:
             self.power_4()
 
         self.movement()
-        self.rect = pygame.Rect(self.x, self.y, 5, 5)
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
         if self.invisible_time <= 0:
             self.draw()
             self.rects.append(self.rect)
         self.invisible_time -= 1
 
-        if self.invisible_time <= -200:
-            self.invisible_time = 15
+        if self.invisible_time <= -180:
+            self.invisible_time = player_hole_duration
 
-        if len(self.rects) > 10:
+        if len(self.rects) > self.width * 2:
             self.collision()
 
         self.powerup_collision()
         self.outOfBounds()
 
-    def power_0(self):
-        self.power_time = 300
-        self.speed = 2
-        self.rotation = 4
+    def power_0(self): #normal
+        self.power_time = powerup_duration
+        self.speed = player_speed
+        self.rotation = player_rotation_speed
+        self.width = player_size[0]
+        self.height = player_size[1]
         keys = pygame.key.get_pressed()
         if keys[self.left]:
             self.direction.rotate_ip(-self.rotation)
         if keys[self.right]:
             self.direction.rotate_ip(self.rotation)
 
-    def power_1(self):
-        self.speed = 4
-        self.rotation = 4
-        keys = pygame.key.get_pressed()
-        if keys[self.left]:
-            self.direction.rotate_ip(-self.rotation)
-        if keys[self.right]:
-            self.direction.rotate_ip(self.rotation)
-        self.power_time -= 1
-        if self.power_time <= 0:
-            self.mode = power_modes[0]
-            self.power_time = 300
-
-    def power_2(self):
-        self.speed = 1
-        self.rotation = 4
+    def power_1(self): #speed
+        self.speed = player_speed * 2
+        self.rotation = player_rotation_speed
+        self.width = player_size[0]
+        self.height = player_size[1]
         keys = pygame.key.get_pressed()
         if keys[self.left]:
             self.direction.rotate_ip(-self.rotation)
@@ -128,13 +128,13 @@ class Player:
         self.power_time -= 1
         if self.power_time <= 0:
             self.mode = power_modes[0]
-            self.power_time = 300
+            self.power_time = powerup_duration
 
-    def power_3(self):
-        self.speed = 2
-        self.rotation = 4
-        self.rect.width = 3
-        self.rect.height = 3
+    def power_2(self): #slow
+        self.speed = player_speed / 2
+        self.rotation = player_rotation_speed
+        self.width = player_size[0]
+        self.height = player_size[1]
         keys = pygame.key.get_pressed()
         if keys[self.left]:
             self.direction.rotate_ip(-self.rotation)
@@ -143,16 +143,32 @@ class Player:
         self.power_time -= 1
         if self.power_time <= 0:
             self.mode = power_modes[0]
-            self.power_time = 300
+            self.power_time = powerup_duration
 
-    def power_4(self):
-        self.speed = 2
-        self.rotation = 4
+    def power_3(self): #big
+        self.speed = player_speed
+        self.rotation = player_rotation_speed
+        self.width = player_size[0] * 3
+        self.height = player_size[1] * 3
+        keys = pygame.key.get_pressed()
+        if keys[self.left]:
+            self.direction.rotate_ip(-self.rotation)
+        if keys[self.right]:
+            self.direction.rotate_ip(self.rotation)
+        self.power_time -= 1
+        if self.power_time <= 0:
+            self.mode = power_modes[0]
+            self.power_time = powerup_duration
+
+    def power_4(self): #90_turn
+        self.speed = player_speed
+        self.width = player_size[0]
+        self.height = player_size[1]
 
         self.power_time -= 1
         if self.power_time <= 0:
             self.mode = power_modes[0]
-            self.power_time = 300
+            self.power_time = powerup_duration
 
 
     def movement(self):
@@ -168,8 +184,9 @@ class Player:
             exit()
 
     def collision(self):
-        for rect in self.rects[0: len(self.rects) - 10]:
+        for rect in self.rects[0: len(self.rects) - self.width * 2]:
             if self.rect.colliderect(rect):
+                print("you killed yourself :(")
                 pygame.quit()
                 exit()
         for player in players:
@@ -193,7 +210,7 @@ players = [
 
 powerups = [Powerup(500, 500)]
 
-power_up_spawn_time = 600
+power_up_spawn_time = powerup_spawn_rate
 
 class Button:
     def __init__(self, x, y, width, height, text) -> None:
@@ -218,7 +235,7 @@ class Button:
         screen.blit(text, (self.x - textRect.width/2, self.y - textRect.height/2))
         
     def collision(self):
-        if pygame.mouse.get_pos()[0] > self.x and pygame.mouse.get_pos()[0] < self.x + self.width and pygame.mouse.get_pos()[1] > self.y and pygame.mouse.get_pos()[1] < self.y + self.height:
+        if pygame.mouse.get_pos()[0] > self.x - self.width/2 and pygame.mouse.get_pos()[0] < self.x + self.width and pygame.mouse.get_pos()[1] > self.y - self.height/2 and pygame.mouse.get_pos()[1] < self.y + self.height:
             if pygame.mouse.get_pressed()[0]:
                 print(self.text)
                 game(power_up_spawn_time)
@@ -246,7 +263,7 @@ def game(timer):
         timer -= 1
         if timer <= 0:
             powerups.append(Powerup(random.randint(25, WIDTH - 25), random.randint(25, HEIGHT - 25)))
-            timer = 600
+            timer = power_up_spawn_time
         
         for player in players:       
             player.update()
@@ -257,7 +274,7 @@ def game(timer):
         pygame.display.flip()
 
 def menu():
-    buttons = [Button(WIDTH/2, 200, 500, 300, "bing"), Button(WIDTH/2, 800, 500, 300, "bong")]
+    buttons = [Button(WIDTH/2, 200, 500, 300, "start"), Button(WIDTH/2, 800, 50, 50, "+")]
     
     while True:
         screen.fill((20, 200, 20))
@@ -272,6 +289,6 @@ def menu():
                 exit()
 
 menu()
-    #game(power_up_spawn_time)
+
 
 
