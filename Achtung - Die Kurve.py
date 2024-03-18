@@ -5,7 +5,7 @@ from Variables import *
 
 pygame.init()
 
-size = WIDTH, HEIGHT = 1000, 1000
+size = WIDTH, HEIGHT = 1200, 1000
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 screen.fill((200, 200, 200))
@@ -204,12 +204,12 @@ class Player:
 
 players = [
             Player((255, 0, 0), pygame.K_a, pygame.K_d, WIDTH/10, HEIGHT/10),
-            #Player((0, 255, 0), pygame.K_LEFT, pygame.K_RIGHT, WIDTH - WIDTH/10, HEIGHT/10),
-            #Player((0, 0, 255), pygame.K_o, pygame.K_p, WIDTH/10, HEIGHT - HEIGHT/10),
-            #Player((255, 255, 0), pygame.K_v, pygame.K_b, WIDTH - WIDTH/10, HEIGHT - HEIGHT/10)
+            Player((0, 255, 0), pygame.K_LEFT, pygame.K_RIGHT, WIDTH - WIDTH/10, HEIGHT/10),
+            Player((0, 0, 255), pygame.K_o, pygame.K_p, WIDTH/10, HEIGHT - HEIGHT/10),
+            Player((255, 255, 0), pygame.K_v, pygame.K_b, WIDTH - WIDTH/10, HEIGHT - HEIGHT/10)
           ]
 
-powerups = [Powerup(500, 500)]
+powerups = [Powerup(WIDTH/2, HEIGHT/2)]
 
 power_up_spawn_time = powerup_spawn_rate
 
@@ -225,9 +225,9 @@ class Button:
         self.text = text
         self.text_size = text_size
 
-    def update(self):  
+    def update(self, playerCount):  
         self.draw()
-        self.collision()
+        self.collision(playerCount)
 
     def draw(self):
         pygame.draw.rect(screen, (0, 0, 0), (self.rect.x, self.rect.y, self.rect.width, self.rect.height))
@@ -236,26 +236,30 @@ class Button:
         textRect = text.get_rect()
         #screen.blit(text, (self.x + self.width/2 - textRect.width/2, self.y + self.height/2 - textRect.height/2))
         screen.blit(text, (self.x - textRect.width/2, self.y - textRect.height/2))
-        
-    def collision(self, playerCount = Player_default_count):
-        if pygame.mouse.get_pos()[0] > self.x - self.width/2 and pygame.mouse.get_pos()[0] < self.x + self.width and pygame.mouse.get_pos()[1] > self.y - self.height/2 and pygame.mouse.get_pos()[1] < self.y + self.height:
+    
+    def collision(self, playerCount):
+        if pygame.mouse.get_pos()[0] > self.x - self.width/2 and pygame.mouse.get_pos()[0] < self.x + self.width/2 and pygame.mouse.get_pos()[1] > self.y - self.height/2 and pygame.mouse.get_pos()[1] < self.y + self.height/2:
             if pygame.mouse.get_pressed()[0]:
                 if self.text == "START":
                     game(power_up_spawn_time)
                 if self.text == "+":
                     playerCount += 1
-                    if playerCount > 4:
-                        playerCount = 4
+                    if playerCount > Player_max_count:
+                        playerCount = Player_max_count
                     print(playerCount)
                 if self.text == "-":
                     playerCount -= 1
-                    if playerCount < 2:
-                        playerCount = 2
+                    if playerCount < Player_min_count:
+                        playerCount = Player_min_count
                     print(playerCount)
+
+        return playerCount
 
 
 def game(timer):
     screen.fill((200, 200, 200))
+
+
     while True:
         clock = pygame.time.Clock()
 
@@ -279,8 +283,9 @@ def game(timer):
             powerups.append(Powerup(random.randint(25, WIDTH - 25), random.randint(25, HEIGHT - 25)))
             timer = power_up_spawn_time
         
-        for player in players:       
-            player.update()
+        for player in players: 
+            if players.index(player) <= playerCount - 1:
+                player.update()      
 
         for powerup in powerups:
             powerup.update()
@@ -288,6 +293,9 @@ def game(timer):
         pygame.display.flip()
 
 def menu():
+    global playerCount
+    playerCount = Player_default_count
+
     buttons = [
                 Button(WIDTH/2, 200, 500, 200, "START", 100), 
                 Button(WIDTH/2, 500, 240, 50, "Player count", 32),
@@ -298,8 +306,14 @@ def menu():
     while True:
         screen.fill((220, 220, 220))
         for button in buttons:
-            button.update()
+            button.update(playerCount)
+            playerCount = button.collision(playerCount)
         
+        for x in range(playerCount):
+            playerBanner = pygame.image.load("Images\Player banner.png")
+            playerBanner = pygame.transform.scale(playerBanner, (350, 50))
+            screen.blit(playerBanner, (WIDTH/2 - playerBanner.get_size()[0] / 2, 545 + x * 70))
+
         pygame.display.flip()
 
         for event in pygame.event.get():
