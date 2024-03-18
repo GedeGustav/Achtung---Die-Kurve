@@ -5,10 +5,12 @@ from Variables import *
 
 pygame.init()
 
-size = WIDTH, HEIGHT = 1200, 1000
+size = WIDTH, HEIGHT = screen_width, screen_height
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 screen.fill((200, 200, 200))
+
+pygame.display.set_caption("Achtung - Die Kurve")
 
 power_modes = ["normal", "speed", "slow", "big", "90_turn"]
 
@@ -60,7 +62,7 @@ class Player:
         self.y = y
         self.width = player_size[0]
         self.height = player_size[1]
-        self.direction = (pygame.Vector2(WIDTH/2, HEIGHT/2) - pygame.Vector2(x, y)).normalize()
+        self.direction = (pygame.Vector2(WIDTH/2 - game_stats_bar_width/2, HEIGHT/2) - pygame.Vector2(x, y)).normalize()
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
         self.rect.center = (self.x, self.y)
         self.rects = []
@@ -179,7 +181,7 @@ class Player:
         pygame.draw.rect(screen, self.color, self.rect)
 
     def outOfBounds(self):
-        if self.x < 0 or self.x > WIDTH or self.y < 0 or self.y > HEIGHT:
+        if self.x < 0 or self.x > WIDTH - game_stats_bar_width or self.y < 0 or self.y > HEIGHT:
             pygame.quit()
             exit()
 
@@ -204,12 +206,12 @@ class Player:
 
 players = [
             Player((255, 0, 0), pygame.K_a, pygame.K_d, WIDTH/10, HEIGHT/10),
-            Player((0, 255, 0), pygame.K_LEFT, pygame.K_RIGHT, WIDTH - WIDTH/10, HEIGHT/10),
+            Player((0, 255, 0), pygame.K_LEFT, pygame.K_RIGHT, WIDTH - WIDTH/10 - game_stats_bar_width, HEIGHT/10),
             Player((0, 0, 255), pygame.K_o, pygame.K_p, WIDTH/10, HEIGHT - HEIGHT/10),
-            Player((255, 255, 0), pygame.K_v, pygame.K_b, WIDTH - WIDTH/10, HEIGHT - HEIGHT/10)
+            Player((255, 255, 0), pygame.K_v, pygame.K_b, WIDTH - WIDTH/10 - game_stats_bar_width, HEIGHT - HEIGHT/10)
           ]
 
-powerups = [Powerup(WIDTH/2, HEIGHT/2)]
+powerups = [Powerup(WIDTH/2 - game_stats_bar_width/2, HEIGHT/2)]
 
 power_up_spawn_time = powerup_spawn_rate
 
@@ -234,7 +236,6 @@ class Button:
         font = pygame.font.Font('freesansbold.ttf', self.text_size)
         text = font.render(self.text, True, (255, 255, 255))
         textRect = text.get_rect()
-        #screen.blit(text, (self.x + self.width/2 - textRect.width/2, self.y + self.height/2 - textRect.height/2))
         screen.blit(text, (self.x - textRect.width/2, self.y - textRect.height/2))
     
     def collision(self, playerCount):
@@ -258,7 +259,6 @@ class Button:
 
 def game(timer):
     screen.fill((200, 200, 200))
-
 
     while True:
         clock = pygame.time.Clock()
@@ -289,6 +289,15 @@ def game(timer):
 
         for powerup in powerups:
             powerup.update()
+
+
+        # game stats bar
+        pygame.draw.rect(screen, game_stats_bar_color, (WIDTH - game_stats_bar_width, 0, game_stats_bar_width, HEIGHT))
+        
+
+
+
+
 
         pygame.display.flip()
 
