@@ -71,6 +71,7 @@ class Player:
         self.power_time = powerup_duration
         self.left = left
         self.right = right
+        self.alive = True
 
     def update(self):
         if self.mode == power_modes[0]:
@@ -99,7 +100,8 @@ class Player:
         if self.invisible_time <= -180:
             self.invisible_time = player_hole_duration
 
-        if len(self.rects) > self.width * 2:
+        #if len(self.rects) > self.width * 2:
+        if len(self.rects) > 30:
             self.collision()
 
         self.powerup_collision()
@@ -182,21 +184,20 @@ class Player:
 
     def outOfBounds(self):
         if self.x < 0 or self.x > WIDTH - game_stats_bar_width or self.y < 0 or self.y > HEIGHT:
-            pygame.quit()
-            exit()
+            self.alive = False
 
     def collision(self):
-        for rect in self.rects[0: len(self.rects) - self.width * 2]:
+        #for rect in self.rects[0: len(self.rects) - self.width * 2]:
+        for rect in self.rects[0: len(self.rects) - 30]:
             if self.rect.colliderect(rect):
                 print("you killed yourself :(")
-                pygame.quit()
-                exit()
+                self.alive = False
+
         for player in players:
             if player != self:
                 for rect in player.rects:
                     if self.rect.colliderect(rect):
-                        pygame.quit()
-                        exit()
+                        self.alive = False
 
     def powerup_collision(self):
         for powerup in powerups:
@@ -253,6 +254,8 @@ class Button:
                     if playerCount < Player_min_count:
                         playerCount = Player_min_count
                     print(playerCount)
+                if self.text == "Menu":
+                    menu()
 
         return playerCount
 
@@ -284,7 +287,7 @@ def game(timer):
             timer = power_up_spawn_time
         
         for player in players: 
-            if players.index(player) <= playerCount - 1:
+            if players.index(player) <= playerCount - 1 and player.alive:
                 player.update()      
 
         for powerup in powerups:
@@ -293,11 +296,23 @@ def game(timer):
 
         # game stats bar
         pygame.draw.rect(screen, game_stats_bar_color, (WIDTH - game_stats_bar_width, 0, game_stats_bar_width, HEIGHT))
-        
+        font = pygame.font.Font('freesansbold.ttf', 32)
+        text = (font.render("Score:", True, (255, 255, 255)))
+        screen.blit(text, (WIDTH - game_stats_bar_width/2 - text.get_rect().width/2, 10))
 
+        for player in players:
+            if players.index(player) <= playerCount - 1:
+                text = (font.render(str(round(len(player.rects) / 60)), True, (255, 255, 255)))
+                screen.blit(text, (WIDTH - game_stats_bar_width/2 - text.get_rect().width/2, 100 + players.index(player) * 100))
 
+        gameButtons = [
+                    Button(WIDTH - game_stats_bar_width/2, HEIGHT-100, 240, 50, "Menu", 32),
+                    Button(WIDTH - game_stats_bar_width/2, HEIGHT-200, 240, 50, "Restart", 32)
 
+                    ]
 
+        for button in gameButtons:
+            button.update(playerCount)
 
         pygame.display.flip()
 
@@ -305,7 +320,7 @@ def menu():
     global playerCount
     playerCount = Player_default_count
 
-    buttons = [
+    menuButtons = [
                 Button(WIDTH/2, 200, 500, 200, "START", 100), 
                 Button(WIDTH/2, 500, 240, 50, "Player count", 32),
                 Button(WIDTH/2 - 150, 500, 50, 50, "-", 32),
@@ -314,7 +329,7 @@ def menu():
     
     while True:
         screen.fill((220, 220, 220))
-        for button in buttons:
+        for button in menuButtons:
             button.update(playerCount)
             playerCount = button.collision(playerCount)
         
