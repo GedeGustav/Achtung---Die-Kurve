@@ -205,12 +205,14 @@ class Player:
                 self.mode = powerup.mode
 
 
-players = [
+"""players = [
             Player((255, 0, 0), pygame.K_a, pygame.K_d, WIDTH/10, HEIGHT/10),
             Player((0, 255, 0), pygame.K_LEFT, pygame.K_RIGHT, WIDTH - WIDTH/10 - game_stats_bar_width, HEIGHT/10),
             Player((0, 0, 255), pygame.K_o, pygame.K_p, WIDTH/10, HEIGHT - HEIGHT/10),
             Player((255, 255, 0), pygame.K_v, pygame.K_b, WIDTH - WIDTH/10 - game_stats_bar_width, HEIGHT - HEIGHT/10)
-          ]
+          ]"""
+
+players = []
 
 powerups = [Powerup(WIDTH/2 - game_stats_bar_width/2, HEIGHT/2)]
 
@@ -256,11 +258,25 @@ class Button:
                     print(playerCount)
                 if self.text == "Menu":
                     menu()
+                if self.text == "Restart":
+                    game(power_up_spawn_time)
+
 
         return playerCount
 
 
 def game(timer):
+    global players
+    players = [
+            Player((255, 0, 0), pygame.K_a, pygame.K_d, WIDTH/10, HEIGHT/10),
+            Player((0, 255, 0), pygame.K_LEFT, pygame.K_RIGHT, WIDTH - WIDTH/10 - game_stats_bar_width, HEIGHT/10),
+            Player((0, 0, 255), pygame.K_o, pygame.K_p, WIDTH/10, HEIGHT - HEIGHT/10),
+            Player((255, 255, 0), pygame.K_v, pygame.K_b, WIDTH - WIDTH/10 - game_stats_bar_width, HEIGHT - HEIGHT/10)
+          ]
+    
+    global powerups
+    powerups = [Powerup(WIDTH/2 - game_stats_bar_width/2, HEIGHT/2)]
+    
     screen.fill((200, 200, 200))
 
     while True:
@@ -300,10 +316,19 @@ def game(timer):
         text = (font.render("Score:", True, (255, 255, 255)))
         screen.blit(text, (WIDTH - game_stats_bar_width/2 - text.get_rect().width/2, 10))
 
+        DeadPlayers = 0
+
         for player in players:
             if players.index(player) <= playerCount - 1:
                 text = (font.render(str(round(len(player.rects) / 60)), True, (255, 255, 255)))
                 screen.blit(text, (WIDTH - game_stats_bar_width/2 - text.get_rect().width/2, 100 + players.index(player) * 100))
+
+            """if player.alive == False:
+                DeadPlayers += 1
+            
+            if DeadPlayers >= playerCount - 1:
+                  game(power_up_spawn_time)"""
+
 
         gameButtons = [
                     Button(WIDTH - game_stats_bar_width/2, HEIGHT-100, 240, 50, "Menu", 32),
