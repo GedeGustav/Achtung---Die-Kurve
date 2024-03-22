@@ -323,11 +323,12 @@ def game(timer):
                 text = (font.render(str(round(len(player.rects) / 60)), True, (255, 255, 255)))
                 screen.blit(text, (WIDTH - game_stats_bar_width/2 - text.get_rect().width/2, 100 + players.index(player) * 100))
 
-            """if player.alive == False:
+            if player.alive == False:
                 DeadPlayers += 1
             
-            if DeadPlayers >= playerCount - 1:
-                  game(power_up_spawn_time)"""
+        """if DeadPlayers >= playerCount - 1:
+            break"""
+            #game(power_up_spawn_time)
 
 
         gameButtons = [
