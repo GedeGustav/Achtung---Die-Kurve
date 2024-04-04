@@ -2,7 +2,6 @@ import pygame
 import random
 from Variables import *
 
-
 pygame.init()
 
 size = WIDTH, HEIGHT = screen_width, screen_height
@@ -204,20 +203,11 @@ class Player:
             if self.rect.colliderect(powerup.rect):
                 self.mode = powerup.mode
 
-
-"""players = [
-            Player((255, 0, 0), pygame.K_a, pygame.K_d, WIDTH/10, HEIGHT/10),
-            Player((0, 255, 0), pygame.K_LEFT, pygame.K_RIGHT, WIDTH - WIDTH/10 - game_stats_bar_width, HEIGHT/10),
-            Player((0, 0, 255), pygame.K_o, pygame.K_p, WIDTH/10, HEIGHT - HEIGHT/10),
-            Player((255, 255, 0), pygame.K_v, pygame.K_b, WIDTH - WIDTH/10 - game_stats_bar_width, HEIGHT - HEIGHT/10)
-          ]"""
-
 players = []
 
 powerups = [Powerup(WIDTH/2 - game_stats_bar_width/2, HEIGHT/2)]
 
 power_up_spawn_time = powerup_spawn_rate
-
 
 class Button:
     def __init__(self, x, y, width, height, text, text_size) -> None:
@@ -265,9 +255,7 @@ class Button:
                 if self.text == "Restart":
                     game(power_up_spawn_time)
 
-
         return playerCount
-
 
 def game(timer):
     global players
@@ -312,7 +300,6 @@ def game(timer):
 
         for powerup in powerups:
             powerup.update()
-
 
         # game stats bar
         pygame.draw.rect(screen, game_stats_bar_color, (WIDTH - game_stats_bar_width, 0, game_stats_bar_width, HEIGHT))
@@ -373,6 +360,3 @@ def menu():
                 exit()
 
 menu()
-
-
-
