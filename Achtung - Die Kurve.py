@@ -156,7 +156,6 @@ class Player:
             self.mode = power_modes[0]
             self.power_time = powerup_duration
 
-
     def movement(self):
         self.x += self.direction.x * self.speed
         self.y += self.direction.y * self.speed
