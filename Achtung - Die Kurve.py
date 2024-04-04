@@ -53,7 +53,6 @@ class Powerup:
                     pygame.draw.rect(screen, (player.color), rect)
                     pygame.display.flip()
 
-
 class Player:
     def __init__(self, color, left, right, x, y):
         self.color = color
@@ -106,62 +105,46 @@ class Player:
         self.powerup_collision()
         self.outOfBounds()
 
+    def normal_input(self):
+        keys = pygame.key.get_pressed()
+        if keys[self.left]:
+            self.direction.rotate_ip(-self.rotation)
+        if keys[self.right]:
+            self.direction.rotate_ip(self.rotation)
+        self.power_time -= 1
+        if self.power_time <= 0:
+            self.mode = power_modes[0]
+            self.power_time = powerup_duration
+
+
     def power_0(self): #normal
         self.power_time = powerup_duration
         self.speed = player_speed
         self.rotation = player_rotation_speed
         self.width = player_size[0]
         self.height = player_size[1]
-        keys = pygame.key.get_pressed()
-        if keys[self.left]:
-            self.direction.rotate_ip(-self.rotation)
-        if keys[self.right]:
-            self.direction.rotate_ip(self.rotation)
+        self.normal_input()
 
     def power_1(self): #speed
         self.speed = player_speed * 2
         self.rotation = player_rotation_speed
         self.width = player_size[0]
         self.height = player_size[1]
-        keys = pygame.key.get_pressed()
-        if keys[self.left]:
-            self.direction.rotate_ip(-self.rotation)
-        if keys[self.right]:
-            self.direction.rotate_ip(self.rotation)
-        self.power_time -= 1
-        if self.power_time <= 0:
-            self.mode = power_modes[0]
-            self.power_time = powerup_duration
+        self.normal_input()
 
     def power_2(self): #slow
         self.speed = player_speed / 2
         self.rotation = player_rotation_speed
         self.width = player_size[0]
         self.height = player_size[1]
-        keys = pygame.key.get_pressed()
-        if keys[self.left]:
-            self.direction.rotate_ip(-self.rotation)
-        if keys[self.right]:
-            self.direction.rotate_ip(self.rotation)
-        self.power_time -= 1
-        if self.power_time <= 0:
-            self.mode = power_modes[0]
-            self.power_time = powerup_duration
+        self.normal_input()
 
     def power_3(self): #big
         self.speed = player_speed
         self.rotation = player_rotation_speed
         self.width = player_size[0] * 3
         self.height = player_size[1] * 3
-        keys = pygame.key.get_pressed()
-        if keys[self.left]:
-            self.direction.rotate_ip(-self.rotation)
-        if keys[self.right]:
-            self.direction.rotate_ip(self.rotation)
-        self.power_time -= 1
-        if self.power_time <= 0:
-            self.mode = power_modes[0]
-            self.power_time = powerup_duration
+        self.normal_input()
 
     def power_4(self): #90_turn
         self.speed = player_speed
