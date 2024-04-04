@@ -246,18 +246,22 @@ class Button:
             if pygame.mouse.get_pressed()[0]:
                 if self.text == "START":
                     game(power_up_spawn_time)
-                if self.text == "+":
-                    playerCount += 1
-                    if playerCount > Player_max_count:
-                        playerCount = Player_max_count
+
+                if self.text == "2":
+                    playerCount = 2
                     print(playerCount)
-                if self.text == "-":
-                    playerCount -= 1
-                    if playerCount < Player_min_count:
-                        playerCount = Player_min_count
+
+                if self.text == "3":
+                    playerCount = 3
                     print(playerCount)
+
+                if self.text == "4":
+                    playerCount = 4 
+                    print(playerCount)
+
                 if self.text == "Menu":
                     menu()
+
                 if self.text == "Restart":
                     game(power_up_spawn_time)
 
@@ -271,7 +275,7 @@ def game(timer):
             Player((255, 0, 0), pygame.K_a, pygame.K_d, WIDTH/10, HEIGHT/10),
             Player((0, 255, 0), pygame.K_LEFT, pygame.K_RIGHT, WIDTH - WIDTH/10 - game_stats_bar_width, HEIGHT/10),
             Player((0, 0, 255), pygame.K_o, pygame.K_p, WIDTH/10, HEIGHT - HEIGHT/10),
-            Player((255, 255, 0), pygame.K_v, pygame.K_b, WIDTH - WIDTH/10 - game_stats_bar_width, HEIGHT - HEIGHT/10)
+            Player((255, 0, 255), pygame.K_v, pygame.K_b, WIDTH - WIDTH/10 - game_stats_bar_width, HEIGHT - HEIGHT/10)
           ]
     
     global powerups
@@ -325,16 +329,11 @@ def game(timer):
 
             if player.alive == False:
                 DeadPlayers += 1
-            
-        """if DeadPlayers >= playerCount - 1:
-            break"""
-            #game(power_up_spawn_time)
 
 
         gameButtons = [
                     Button(WIDTH - game_stats_bar_width/2, HEIGHT-100, 240, 50, "Menu", 32),
                     Button(WIDTH - game_stats_bar_width/2, HEIGHT-200, 240, 50, "Restart", 32)
-
                     ]
 
         for button in gameButtons:
@@ -348,11 +347,13 @@ def menu():
 
     menuButtons = [
                 Button(WIDTH/2, 200, 500, 200, "START", 100), 
-                Button(WIDTH/2, 500, 240, 50, "Player count", 32),
-                Button(WIDTH/2 - 150, 500, 50, 50, "-", 32),
-                Button(WIDTH/2 + 150, 500, 50, 50, "+", 32)
+                Button(WIDTH/2 - 150, 500, 50, 50, "2", 32),
+                Button(WIDTH/2, 500, 50, 50, "3", 32),
+                Button(WIDTH/2 + 150, 500, 50, 50, "4", 32)
               ]
     
+    player_banners = [pygame.image.load("Images\Player 1.png"), pygame.image.load("Images\Player 2.png"), pygame.image.load("Images\Player 3.png"), pygame.image.load("Images\Player 4.png")]                                 
+
     while True:
         screen.fill((220, 220, 220))
         for button in menuButtons:
@@ -360,7 +361,7 @@ def menu():
             playerCount = button.collision(playerCount)
         
         for x in range(playerCount):
-            playerBanner = pygame.image.load("Images\Player banner.png")
+            playerBanner = player_banners[x]
             playerBanner = pygame.transform.scale(playerBanner, (350, 50))
             screen.blit(playerBanner, (WIDTH/2 - playerBanner.get_size()[0] / 2, 545 + x * 70))
 
