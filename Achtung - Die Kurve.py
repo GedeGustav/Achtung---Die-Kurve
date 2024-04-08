@@ -323,7 +323,10 @@ def menu():
                 Button(WIDTH/2 + 150, 500, 50, 50, "4", 32)
               ]
     
-    player_banners = [pygame.image.load("Images\Player 1.png"), pygame.image.load("Images\Player 2.png"), pygame.image.load("Images\Player 3.png"), pygame.image.load("Images\Player 4.png")]                                 
+    player_banners = [pygame.image.load("Images\Player 1.png"), 
+                      pygame.image.load("Images\Player 2.png"), 
+                      pygame.image.load("Images\Player 3.png"), 
+                      pygame.image.load("Images\Player 4.png")]                                 
 
     while True:
         screen.fill((220, 220, 220))
