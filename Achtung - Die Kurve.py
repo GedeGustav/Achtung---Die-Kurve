@@ -98,7 +98,6 @@ class Player:
         if self.invisible_time <= -180:
             self.invisible_time = player_hole_duration
 
-        #if len(self.rects) > self.width * 2:
         if len(self.rects) > 30:
             self.collision()
 
@@ -168,7 +167,6 @@ class Player:
             self.alive = False
 
     def collision(self):
-        #for rect in self.rects[0: len(self.rects) - self.width * 2]:
         for rect in self.rects[0: len(self.rects) - 30]:
             if self.rect.colliderect(rect):
                 print("you killed yourself :(")
@@ -214,7 +212,11 @@ class Button:
         screen.blit(text, (self.x - textRect.width/2, self.y - textRect.height/2))
     
     def collision(self, playerCount):
-        if pygame.mouse.get_pos()[0] > self.x - self.width/2 and pygame.mouse.get_pos()[0] < self.x + self.width/2 and pygame.mouse.get_pos()[1] > self.y - self.height/2 and pygame.mouse.get_pos()[1] < self.y + self.height/2:
+        if (pygame.mouse.get_pos()[0] > self.x - self.width/2 and 
+            pygame.mouse.get_pos()[0] < self.x + self.width/2 and 
+            pygame.mouse.get_pos()[1] > self.y - self.height/2 and 
+            pygame.mouse.get_pos()[1] < self.y + self.height/2):
+            
             if pygame.mouse.get_pressed()[0]:
                 if self.text == "START":
                     game(power_up_spawn_time)
