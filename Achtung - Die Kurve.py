@@ -13,7 +13,10 @@ pygame.display.set_caption("Achtung - Die Kurve")
 
 power_modes = ["normal", "speed", "slow", "big", "90_turn"]
 
-powerup_images = [pygame.image.load("Images/speed.jpg"), pygame.image.load("Images/slow.jpg"), pygame.image.load("Images/size.jpg"), pygame.image.load("Images/90_turn.jpg")]
+powerup_images = [pygame.image.load("Images/speed.jpg"), 
+                  pygame.image.load("Images/slow.jpg"), 
+                  pygame.image.load("Images/size.jpg"), 
+                  pygame.image.load("Images/90_turn.jpg")]
 
 class Powerup:
     def __init__(self, x, y):
