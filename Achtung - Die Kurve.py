@@ -13,7 +13,7 @@ pygame.display.set_caption("Achtung - Die Kurve")
 
 power_modes = ["normal", "speed", "slow", "big", "90_turn"]
 
-powerup_images = [pygame.image.load("Images/speed.jpg"), pygame.image.load("Images/slow.jpg"), pygame.image.load("Images/size.jpg"), pygame.image.load("Images/90_turn.jpg")]
+powerup_images = [pygame.image.load("Snake\Images/speed.jpg"), pygame.image.load("Snake\Images/slow.jpg"), pygame.image.load("Snake\Images/size.jpg"), pygame.image.load("Snake\Images/90_turn.jpg")]
 
 class Powerup:
     def __init__(self, x, y):
@@ -323,7 +323,7 @@ def menu():
                 Button(WIDTH/2 + 150, 500, 50, 50, "4", 32)
               ]
     
-    player_banners = [pygame.image.load("Images\Player 1.png"), pygame.image.load("Images\Player 2.png"), pygame.image.load("Images\Player 3.png"), pygame.image.load("Images\Player 4.png")]                                 
+    player_banners = [pygame.image.load("Snake\Images\Player 1.png"), pygame.image.load("Snake\Images\Player 2.png"), pygame.image.load("Snake\Images\Player 3.png"), pygame.image.load("Snake\Images\Player 4.png")]                                 
 
     while True:
         screen.fill((220, 220, 220))
